@@ -31,7 +31,6 @@ public class GameOverScreen implements Screen {
         stage = new Stage(new ExtendViewport(1280, 720));
         Gdx.input.setInputProcessor(stage);
 
-        // Init Skin Sederhana
         skin = new Skin();
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
@@ -48,7 +47,6 @@ public class GameOverScreen implements Screen {
         lblStyle.font = skin.getFont("default");
         skin.add("default", lblStyle);
 
-        // Layout
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);

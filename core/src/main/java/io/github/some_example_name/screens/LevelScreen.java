@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -21,6 +22,7 @@ public class LevelScreen implements Screen {
     private final Main game;
     private Stage stage;
     private Skin skin;
+    private Texture backgroundTexture;
 
     public LevelScreen(Main game) {
         this.game = game;
@@ -31,7 +33,11 @@ public class LevelScreen implements Screen {
         stage = new Stage(new ExtendViewport(1280, 720));
         Gdx.input.setInputProcessor(stage);
 
-        // Init Skin
+        backgroundTexture = new Texture(Gdx.files.internal("bg.png"));
+        Image backgroundImage = new Image(backgroundTexture);
+        backgroundImage.setFillParent(true);
+        stage.addActor(backgroundImage);
+
         skin = new Skin();
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
@@ -103,5 +109,5 @@ public class LevelScreen implements Screen {
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
-    @Override public void dispose() { stage.dispose(); skin.dispose(); }
+    @Override public void dispose() { stage.dispose(); skin.dispose(); backgroundTexture.dispose(); }
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -19,17 +20,25 @@ import io.github.some_example_name.Main;
 
 public class GameOverScreen implements Screen {
     private final Main game;
+    private final int finalScore;
     private Stage stage;
     private Skin skin;
+    private Texture backgroundTexture;
 
-    public GameOverScreen(Main game) {
+    public GameOverScreen(Main game, int finalScore) {
         this.game = game;
+        this.finalScore = finalScore;
     }
 
     @Override
     public void show() {
         stage = new Stage(new ExtendViewport(1280, 720));
         Gdx.input.setInputProcessor(stage);
+
+        backgroundTexture = new Texture(Gdx.files.internal("bg.png"));
+        Image backgroundImage = new Image(backgroundTexture);
+        backgroundImage.setFillParent(true);
+        stage.addActor(backgroundImage);
 
         skin = new Skin();
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -51,11 +60,11 @@ public class GameOverScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
-        Label winLabel = new Label("SELAMAT! KAMU MENANG!", skin);
+        Label winLabel = new Label("SELAMAT! KAMU BERHASIL!", skin);
         winLabel.setFontScale(3f);
         winLabel.setColor(Color.GOLD);
 
-        Label scoreLabel = new Label("Semua hewan berhasil ditebak! (120 Poin)", skin);
+        Label scoreLabel = new Label("Skor kamu: " + finalScore + " / 120", skin);
         scoreLabel.setFontScale(1.5f);
 
         TextButton backButton = new TextButton("KEMBALI KE MENU UTAMA", skin);
@@ -85,5 +94,5 @@ public class GameOverScreen implements Screen {
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
-    @Override public void dispose() { stage.dispose(); skin.dispose(); }
+    @Override public void dispose() { stage.dispose(); skin.dispose(); backgroundTexture.dispose(); }
 }

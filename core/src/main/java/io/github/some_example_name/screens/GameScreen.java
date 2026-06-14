@@ -31,6 +31,7 @@ public class GameScreen implements Screen {
     private Skin skin;
     private int totalPoin;
     private Label poinLabel;
+    private Texture backgroundTexture;
     private Array<SoalHewan> semuaSoal;
     private Array<SoalHewan> daftarSoal;
 
@@ -55,6 +56,11 @@ public class GameScreen implements Screen {
         stage = new Stage(viewport);
         Gdx.input.setInputProcessor(stage);
 
+        backgroundTexture = new Texture(Gdx.files.internal("bg.png"));
+        Image backgroundImage = new Image(backgroundTexture);
+        backgroundImage.setFillParent(true);
+        stage.addActor(backgroundImage);
+
         initSkin();
         initDataSoal();
         daftarSoal = ambilSoalUntukLevel(levelAktif);
@@ -74,7 +80,7 @@ public class GameScreen implements Screen {
             Texture imgTexture = new Texture(Gdx.files.internal(soal.namaFileGambar)); 
             Image img = new Image(imgTexture);
             
-            final TextButton btnMasuk = new TextButton("masuk", skin);
+            final TextButton btnMasuk = new TextButton("jawab", skin);
 
             kotakSoal.add(img).width(140).height(140).padBottom(15).row();
             kotakSoal.add(btnMasuk).width(110).height(35);
@@ -99,8 +105,13 @@ public class GameScreen implements Screen {
         poinLabel = new Label("Level " + levelAktif + " | Setiap satu gambar dijawab diberi 10 poin. Total Poin: " + totalPoin, skin);
         poinLabel.setFontScale(2.2f); 
 
+        Table poinContainer = new Table();
+        poinContainer.setBackground(skin.newDrawable("white", Color.BLACK));
+        poinContainer.pad(10f);
+        poinContainer.add(poinLabel);
+
         mainTable.add(gridTable).expand().fill().pad(30).row();
-        mainTable.add(poinLabel).padBottom(40);
+        mainTable.add(poinContainer).padBottom(40);
     }
 
     private void tampilkanPopUpTebak(final SoalHewan soal, final TextButton btnGridAsal) {
@@ -146,7 +157,7 @@ public class GameScreen implements Screen {
                     totalPoin += 10;
                     poinLabel.setText("Level " + levelAktif + " | Setiap satu gambar dijawab diberi 10 poin. Total Poin: " + totalPoin);
 
-                    btnGridAsal.setText("Ok!");
+                    btnGridAsal.setText("Benar!");
                     btnGridAsal.setDisabled(true);
 
                     popUpDialog.hide();
@@ -155,16 +166,19 @@ public class GameScreen implements Screen {
                         if (levelAktif < 3) {
                             game.setScreen(new GameScreen(game, levelAktif + 1, totalPoin));
                         } else {
-                            game.setScreen(new GameOverScreen(game));
+                            game.setScreen(new GameOverScreen(game, totalPoin));
                         }
 
                         dispose();
                     }
                 } else {
-                    inputTebakan.setText("");
-                    labelSalah.setText("Jawaban salah, coba lagi.");
-                    inputTebakan.setMessageText("Ketik jawaban di sini...");
-                    stage.setKeyboardFocus(inputTebakan);
+                    soal.isTerjawab = true;
+                    btnGridAsal.setText("Salah!");
+                    btnGridAsal.setDisabled(true);
+                    labelSalah.setText("Salah. Jawaban benar: " + soal.kunciJawaban);
+                    inputTebakan.setDisabled(true);
+                    btnCek.setDisabled(true);
+                    btnBatal.setText("Tutup");
                 }
             }
         };
@@ -191,6 +205,16 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 popUpDialog.hide();
+
+                if (soal.isTerjawab && levelSelesai()) {
+                    if (levelAktif < 3) {
+                        game.setScreen(new GameScreen(game, levelAktif + 1, totalPoin));
+                    } else {
+                        game.setScreen(new GameOverScreen(game, totalPoin));
+                    }
+
+                    dispose();
+                }
             }
         });
 
@@ -274,7 +298,6 @@ public class GameScreen implements Screen {
         windowStyle.titleFont = skin.getFont("default");
         windowStyle.titleFontColor = Color.WHITE;
         skin.add("default", windowStyle);
-        // ------------------------------------------------------------
     }
 
     @Override
@@ -299,5 +322,6 @@ public class GameScreen implements Screen {
     public void dispose() {
         stage.dispose();
         skin.dispose();
+        backgroundTexture.dispose();
     }
 }

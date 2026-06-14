@@ -34,11 +34,8 @@ public class MainMenuScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         backgroundTexture = new Texture(Gdx.files.internal("background menu.png"));
-        
         Image backgroundImage = new Image(backgroundTexture);
-        
         backgroundImage.setFillParent(true);
-        
         stage.addActor(backgroundImage);
 
         skin = new Skin();

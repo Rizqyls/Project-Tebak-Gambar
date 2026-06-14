@@ -26,14 +26,26 @@ import io.github.some_example_name.Main;
 
 public class GameScreen implements Screen {
     private final Main game;
+    private final int levelAktif;
     private Stage stage;
     private Skin skin;
-    private int totalPoin = 0;
+    private int totalPoin;
     private Label poinLabel;
+    private Array<SoalHewan> semuaSoal;
     private Array<SoalHewan> daftarSoal;
 
     public GameScreen(Main game) {
+        this(game, 1, 0);
+    }
+
+    public GameScreen(Main game, int levelAktif) {
+        this(game, levelAktif, 0);
+    }
+
+    public GameScreen(Main game, int levelAktif, int totalPoinAwal) {
         this.game = game;
+        this.levelAktif = levelAktif;
+        this.totalPoin = totalPoinAwal;
     }
 
     @Override
@@ -45,6 +57,7 @@ public class GameScreen implements Screen {
 
         initSkin();
         initDataSoal();
+        daftarSoal = ambilSoalUntukLevel(levelAktif);
 
         Table mainTable = new Table();
         mainTable.setFillParent(true);
@@ -83,7 +96,7 @@ public class GameScreen implements Screen {
             }
         }
 
-        poinLabel = new Label("Setiap satu gambar dijawab diberi 10 poin. Total Poin: 0", skin);
+        poinLabel = new Label("Level " + levelAktif + " | Setiap satu gambar dijawab diberi 10 poin. Total Poin: " + totalPoin, skin);
         poinLabel.setFontScale(2.2f); 
 
         mainTable.add(gridTable).expand().fill().pad(30).row();
@@ -131,15 +144,20 @@ public class GameScreen implements Screen {
                 if (jawaban.equalsIgnoreCase(soal.kunciJawaban)) {
                     soal.isTerjawab = true;
                     totalPoin += 10;
-                    poinLabel.setText("Setiap satu gambar dijawab diberi 10 poin. Total Poin: " + totalPoin);
+                    poinLabel.setText("Level " + levelAktif + " | Setiap satu gambar dijawab diberi 10 poin. Total Poin: " + totalPoin);
 
                     btnGridAsal.setText("Ok!");
                     btnGridAsal.setDisabled(true);
 
                     popUpDialog.hide();
 
-                    if (totalPoin == 120) {
-                        game.setScreen(new GameOverScreen(game));
+                    if (levelSelesai()) {
+                        if (levelAktif < 3) {
+                            game.setScreen(new GameScreen(game, levelAktif + 1, totalPoin));
+                        } else {
+                            game.setScreen(new GameOverScreen(game));
+                        }
+
                         dispose();
                     }
                 } else {
@@ -181,19 +199,45 @@ public class GameScreen implements Screen {
     }
 
     private void initDataSoal() {
-        daftarSoal = new Array<>();
-        daftarSoal.add(new SoalHewan(1, "pinguin.png", "penguin"));
-        daftarSoal.add(new SoalHewan(2, "beruang.png", "bear"));
-        daftarSoal.add(new SoalHewan(3, "monyet.png", "monkey"));
-        daftarSoal.add(new SoalHewan(4, "gajah.png", "elephant"));
-        daftarSoal.add(new SoalHewan(5, "singa.png", "lion"));
-        daftarSoal.add(new SoalHewan(6, "harimau.png", "tiger"));
-        daftarSoal.add(new SoalHewan(7, "jerapah.png", "giraffe"));
-        daftarSoal.add(new SoalHewan(8, "kucing.png", "cat")); 
-        daftarSoal.add(new SoalHewan(9, "anjing.png", "dog"));
-        daftarSoal.add(new SoalHewan(10, "ayam.png", "chicken"));
-        daftarSoal.add(new SoalHewan(11, "bebek.png", "duck"));
-        daftarSoal.add(new SoalHewan(12, "burung.png", "bird"));
+        semuaSoal = new Array<>();
+        semuaSoal.add(new SoalHewan(1, "pinguin.png", "penguin"));
+        semuaSoal.add(new SoalHewan(2, "beruang.png", "bear"));
+        semuaSoal.add(new SoalHewan(3, "monyet.png", "monkey"));
+        semuaSoal.add(new SoalHewan(4, "gajah.png", "elephant"));
+        semuaSoal.add(new SoalHewan(5, "singa.png", "lion"));
+        semuaSoal.add(new SoalHewan(6, "harimau.png", "tiger"));
+        semuaSoal.add(new SoalHewan(7, "jerapah.png", "giraffe"));
+        semuaSoal.add(new SoalHewan(8, "kucing.png", "cat")); 
+        semuaSoal.add(new SoalHewan(9, "anjing.png", "dog"));
+        semuaSoal.add(new SoalHewan(10, "ayam.png", "chicken"));
+        semuaSoal.add(new SoalHewan(11, "bebek.png", "duck"));
+        semuaSoal.add(new SoalHewan(12, "burung.png", "bird"));
+    }
+
+    private Array<SoalHewan> ambilSoalUntukLevel(int level) {
+        int soalPerLevel = level + 2;
+        int startIndex = 0;
+
+        for (int i = 1; i < level; i++) {
+            startIndex += i + 2;
+        }
+
+        Array<SoalHewan> soalLevel = new Array<>();
+        for (int i = startIndex; i < startIndex + soalPerLevel && i < semuaSoal.size; i++) {
+            soalLevel.add(semuaSoal.get(i));
+        }
+
+        return soalLevel;
+    }
+
+    private boolean levelSelesai() {
+        for (SoalHewan soal : daftarSoal) {
+            if (!soal.isTerjawab) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void initSkin() {

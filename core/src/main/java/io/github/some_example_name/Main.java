@@ -4,7 +4,7 @@ import com.badlogic.gdx.Game;
 import io.github.some_example_name.screens.MainMenuScreen;
 
 public class Main extends Game {
-    
+
     @Override
     public void create() {
         this.setScreen(new MainMenuScreen(this));

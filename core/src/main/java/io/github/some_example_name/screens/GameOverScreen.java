@@ -60,16 +60,23 @@ public class GameOverScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
-        Label winLabel = new Label("SELAMAT! KAMU BERHASIL!", skin);
-        winLabel.setFontScale(3f);
-        winLabel.setColor(Color.GOLD);
-
+        if(finalScore == 0){
+            Label loseLabel = new Label("YAH, KAMU GAGAL!", skin);
+            loseLabel.setFontScale(3f);
+            loseLabel.setColor(Color.RED);
+            table.add(loseLabel).padBottom(20).row();
+        }else{
+            Label winLabel = new Label("SELAMAT! KAMU BERHASIL!", skin);
+            winLabel.setFontScale(3f);
+            winLabel.setColor(Color.GOLD);
+            table.add(winLabel).padBottom(20).row();
+        }
+        
         Label scoreLabel = new Label("Skor kamu: " + finalScore + " / 120", skin);
         scoreLabel.setFontScale(1.5f);
 
         TextButton backButton = new TextButton("KEMBALI KE MENU UTAMA", skin);
 
-        table.add(winLabel).padBottom(20).row();
         table.add(scoreLabel).padBottom(50).row();
         table.add(backButton).width(300).height(50);
 
